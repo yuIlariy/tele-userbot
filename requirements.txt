@@ -1,0 +1,13 @@
+aiohttp
+requests
+pytz
+qrcode
+feedparser
+whoisdomain
+Pillow
+beautifulsoup4
+pyfiglet
+googlesearch-python
+pyppeteer
+pyrofork
+tgcrypto
