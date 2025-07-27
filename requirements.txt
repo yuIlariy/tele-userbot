@@ -11,3 +11,5 @@ googlesearch-python
 pyppeteer
 pyrofork
 tgcrypto
+flask
+werkzeug==2.2.2
