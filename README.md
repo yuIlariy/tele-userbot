@@ -399,6 +399,6 @@ If you find this project helpful, please:
 
 **Made with ❤️ by [devgaganin](https://github.com/devgaganin)**
 
-**[⬆ Back to Top](#-tele-userbot)**
+**[⬆ Back to Top](#tele-userbot)**
 
 </div>
