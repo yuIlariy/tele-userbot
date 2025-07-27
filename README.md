@@ -1,4 +1,4 @@
-# tele-userbot - PRO EDITION
+# TELE USERBOT
 
 <div align="center">
   
@@ -381,8 +381,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Developer**: [@devgaganin](https://github.com/devgaganin)
 - **Telegram**: [@devgaganin](https://t.me/devgaganin)
-- **Issues**: [Report Issues](https://github.com/devgaganin/ultra-userbot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/devgaganin/ultra-userbot/discussions)
+- **Issues**: [Report Issues](https://github.com/devgaganin/tele-userbot/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/devgaganin/tele-userbot/discussions)
 
 ## 🌟 Support
 
@@ -399,6 +399,6 @@ If you find this project helpful, please:
 
 **Made with ❤️ by [devgaganin](https://github.com/devgaganin)**
 
-**[⬆ Back to Top](#-ultra-userbot---pro-edition)**
+**[⬆ Back to Top](#-tele-userbot)**
 
 </div>
