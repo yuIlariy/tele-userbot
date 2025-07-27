@@ -1,4 +1,4 @@
-# TELE USERBOT
+# tele-userbot
 
 <div align="center">
   
@@ -7,13 +7,14 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Telegram](https://img.shields.io/badge/Telegram-@devgaganin-blue.svg)](https://t.me/devgaganin)
 
-**A powerful, feature-rich Telegram userbot with 100+ commands for automation, media management, and enhanced Telegram experience.**
+**A powerful, feature-rich Telegram userbot with versatile commands for automation, media management, and enhanced Telegram experience.**
+**✨ Note: this code is bot ready code means you can run userbot as well use second client for bot for callbacks and functions ✨**
 
 </div>
 
 ## ✨ Features
 
-- 🔧 **Multi Commands** - Comprehensive command library
+- 🔧 **Pro Commands** - Comprehensive command library
 - 🤖 **Automation** - Auto replies, filters, scheduled tasks
 - 💾 **Media Management** - Save, organize, and manage media files
 - 🛡️ **Privacy & Security** - Ghost mode, anti-spam, user blocking
@@ -228,7 +229,7 @@
 - Telegram API credentials
 - Unsplash API key (optional, for image features)
 
-### Installation
+### Local Installation
 
 1. **Clone the repository**
    ```bash
@@ -238,7 +239,7 @@
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    ```
 
 3. **Configure the bot**
@@ -256,7 +257,149 @@
 
 4. **Run the bot**
    ```bash
-   python main.py
+   python3 main.py
+   ```
+
+## 🚀 Deployment Guide
+
+### Heroku Deployment
+
+1. **Create a new Heroku app**
+   ```bash
+   heroku create your-app-name
+   ```
+
+2. **Connect your GitHub repository**
+   - Go to Heroku Dashboard
+   - Select your app
+   - Go to "Deploy" tab
+   - Connect to GitHub and select `devgaganin/tele-userbot`
+
+3. **Set environment variables**
+   - Go to "Settings" tab
+   - Click "Reveal Config Vars"
+   - Add the following variables:
+     ```
+     API_ID = your_api_id
+     API_HASH = your_api_hash
+     SESSION_STRING = your_session_string
+     UNSPLASH_KEY = your_unsplash_key (optional)
+     ```
+
+4. **Deploy the app**
+   - Go back to "Deploy" tab
+   - Click "Deploy Branch" or enable automatic deploys
+
+### Koyeb Deployment
+
+1. **Connect your repository**
+   - Sign up at [Koyeb](https://koyeb.com)
+   - Create new app from GitHub
+   - Select `devgaganin/tele-userbot` repository
+
+2. **Configure environment variables**
+   ```
+   API_ID = your_api_id
+   API_HASH = your_api_hash
+   SESSION_STRING = your_session_string
+   UNSPLASH_KEY = your_unsplash_key (optional)
+   PORT = 5000
+   ```
+
+3. **Set build settings**
+   - Build command: `pip install -r requirements.txt`
+   - Run command: `python3 main.py`
+   - Port: `5000`
+
+4. **Deploy the application**
+
+### Railway Deployment
+
+1. **Connect repository**
+   - Sign up at [Railway](https://railway.app)
+   - Create new project from GitHub
+   - Select `devgaganin/tele-userbot`
+
+2. **Set environment variables**
+   ```
+   API_ID = your_api_id
+   API_HASH = your_api_hash
+   SESSION_STRING = your_session_string
+   UNSPLASH_KEY = your_unsplash_key (optional)
+   PORT = 5000
+   ```
+
+3. **Configure settings**
+   - Railway will auto-detect Python
+   - Ensure port is set to `5000`
+   - Deploy automatically
+
+### Render Deployment
+
+1. **Create new web service**
+   - Sign up at [Render](https://render.com)
+   - Create new "Web Service"
+   - Connect `devgaganin/tele-userbot` repository
+
+2. **Configure build settings**
+   - Build command: `pip install -r requirements.txt`
+   - Start command: `python3 main.py`
+
+3. **Set environment variables**
+   ```
+   API_ID = your_api_id
+   API_HASH = your_api_hash
+   SESSION_STRING = your_session_string
+   UNSPLASH_KEY = your_unsplash_key (optional)
+   PORT = 5000
+   ```
+
+4. **Deploy the service**
+
+### VPS Deployment (Ubuntu/Debian)
+
+1. **Update system and install Python**
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install python3 python3-pip git -y
+   ```
+
+2. **Clone and setup**
+   ```bash
+   git clone https://github.com/devgaganin/tele-userbot.git
+   cd tele-userbot
+   pip3 install -r requirements.txt
+   ```
+
+3. **Configure environment**
+   ```bash
+   nano config.py  # Edit with your credentials
+   ```
+
+4. **Run with screen (persistent session)**
+   ```bash
+   screen -S userbot
+   python3 main.py
+   # Press Ctrl+A then D to detach
+   ```
+
+### Docker Deployment
+
+1. **Create Dockerfile** (if not included)
+   ```dockerfile
+   FROM python:3.9-slim
+   WORKDIR /app
+   COPY requirements.txt .
+   RUN pip install -r requirements.txt
+   COPY . .
+   EXPOSE 5000
+   CMD ["python3", "main.py"]
+   ```
+
+2. **Build and run**
+   ```bash
+   docker build -t tele-userbot .
+   docker run -d -p 5000:5000 --name userbot tele-userbot
    ```
 
 ### Getting Session String
@@ -399,6 +542,6 @@ If you find this project helpful, please:
 
 **Made with ❤️ by [devgaganin](https://github.com/devgaganin)**
 
-**[⬆ Back to Top](#tele-userbot)**
+**[⬆ Back to Top](#-tele-userbot---pro-edition)**
 
 </div>
