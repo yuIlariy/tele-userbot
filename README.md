@@ -232,8 +232,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/devgaganin/ultra-userbot.git
-   cd ultra-userbot
+   git clone https://github.com/devgaganin/tele-userbot.git
+   cd tele-userbot
    ```
 
 2. **Install dependencies**
@@ -308,7 +308,7 @@ Create a `config.py` file with the following variables:
 ## 🏗️ Project Structure
 
 ```
-ultra-userbot/
+tele-userbot/
 ├── main.py              # Single file containing all bot functionality
 ├── config.py            # Configuration file
 ├── requirements.txt     # Python dependencies
@@ -380,7 +380,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - **Developer**: [@devgaganin](https://github.com/devgaganin)
-- **Telegram**: [@devgaganin](https://t.me/team_spy_pro)
+- **Telegram**: [@team_spy_pro](https://t.me/team_spy_pro)
 - **Issues**: [Report Issues](https://github.com/devgaganin/tele-userbot/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/devgaganin/tele-userbot/discussions)
 
