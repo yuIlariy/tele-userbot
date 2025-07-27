@@ -380,7 +380,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - **Developer**: [@devgaganin](https://github.com/devgaganin)
-- **Telegram**: [@devgaganin](https://t.me/devgaganin)
+- **Telegram**: [@devgaganin](https://t.me/team_spy_pro)
 - **Issues**: [Report Issues](https://github.com/devgaganin/tele-userbot/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/devgaganin/tele-userbot/discussions)
 
