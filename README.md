@@ -13,7 +13,7 @@
 
 ## ✨ Features
 
-- 🔧 **100+ Commands** - Comprehensive command library
+- 🔧 **Multi Commands** - Comprehensive command library
 - 🤖 **Automation** - Auto replies, filters, scheduled tasks
 - 💾 **Media Management** - Save, organize, and manage media files
 - 🛡️ **Privacy & Security** - Ghost mode, anti-spam, user blocking
