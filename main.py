@@ -917,7 +917,11 @@ async def purge_messages(client: Client, message: Message):
         await message.edit_text(f"Error: {str(e)}")
 
 
-# ✅ Store the handler reference properly
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from pyrogram.handlers import MessageHandler
+import asyncio
+
 clean_handler_ref = [None, None]  # [callback, group]
 
 @app.on_message(filters.command("addclean", prefixes=".") & filters.me)
@@ -931,12 +935,15 @@ async def enable_clean_mode(client: Client, message: Message):
                 except:
                     pass
 
-            callback = lambda client, msg: asyncio.create_task(clean_service_message(client, msg))
-            handler = app.on_message(filters.service)(callback)
-            clean_handler_ref = [callback, handler[1]]  # Save correct pair
+            callback = lambda c, m: asyncio.create_task(clean_service_message(c, m))
+            handler = MessageHandler(callback, filters.service)
+            group = 99  # Arbitrary group ID — pick any unused integer
+            app.add_handler(handler, group)
+            clean_handler_ref = [handler, group]
+
             await message.edit_text("✅ Clean mode enabled. Service messages will auto-delete.")
         else:
-            await message.edit_text("ℹ️ Clean mode was already active.")
+            await message.edit_text("ℹ️ Clean mode already active.")
     except Exception as e:
         await message.edit_text(f"⚠️ Error enabling clean mode:\n<code>{e}</code>")
 
@@ -949,14 +956,16 @@ async def disable_clean_mode(client: Client, message: Message):
             clean_handler_ref = [None, None]
             await message.edit_text("❎ Clean mode disabled. Service messages will remain.")
         else:
-            await message.edit_text("ℹ️ Clean mode was not active.")
+            await message.edit_text("ℹ️ Clean mode wasn't active.")
     except Exception as e:
         await message.edit_text(f"⚠️ Error disabling clean mode:\n<code>{e}</code>")
 
 @app.on_message(filters.command("cleanstatus", prefixes=".") & filters.me)
 async def check_clean_mode(client: Client, message: Message):
-    status = "🧼 Clean mode is <b>active</b>." if clean_handler_ref[0] else "🧊 Clean mode is <b>disabled</b>."
-    await message.edit_text(status)
+    if clean_handler_ref[0] is not None:
+        await message.edit_text("🧼 Clean mode is <b>active</b> — service messages will auto-delete.")
+    else:
+        await message.edit_text("🧊 Clean mode is <b>disabled</b> — service messages stay untouched.")
 
 
 
