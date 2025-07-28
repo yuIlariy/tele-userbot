@@ -731,9 +731,10 @@ async def unban_user(client: Client, message: Message):
 async def promote_user(client: Client, message: Message):
     if not await check_admin(client, message.chat.id, client.me.id):
         return await message.edit_text("I'm not admin here!")
-    
+
     user_id = None
     rank = "Admin"
+
     if message.reply_to_message:
         user_id = message.reply_to_message.from_user.id
         if len(message.command) > 1:
@@ -745,17 +746,20 @@ async def promote_user(client: Client, message: Message):
         user_id = message.command[1]
     else:
         return await message.edit_text("Reply to user or provide user ID and rank")
-    
+
     try:
+        me_member = await client.get_chat_member(message.chat.id, client.me.id)
         await client.promote_chat_member(
             message.chat.id,
             user_id,
-            privileges=client.get_chat_member(message.chat.id, client.me.id).privileges
+            privileges=me_member.privileges
         )
         await client.set_administrator_title(message.chat.id, user_id, rank)
-        await message.edit_text(f"**Promoted** {user_id} as {rank}!")
+        await message.edit_text(f"👑 **Promoted** `{user_id}` as `{rank}`!")
     except Exception as e:
-        await message.edit_text(f"Error: {str(e)}")
+        await message.edit_text(f"❌ Error: `{str(e)}`")
+
+
 
 @app.on_message(filters.command("demote", prefixes=".") & filters.me)
 async def demote_user(client: Client, message: Message):
