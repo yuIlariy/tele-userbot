@@ -81,7 +81,7 @@ app = Client(
     session_string=SESSION_STRING,
     workers=20
 )
-
+app.start_time = datetime.now()
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -662,12 +662,26 @@ async def ping_command(client: Client, message: Message):
     msg = await message.edit_text("Pinging...")
     end = datetime.now()
     latency = (end - start).microseconds / 1000
-    await msg.edit_text(f"**Pong!** `{latency}ms`")
+    await msg.edit_text(f"**Pong!🎈** `{latency}ms`")
 
 @app.on_message(filters.command("alive", prefixes=".") & filters.me)
 async def alive_command(client: Client, message: Message):
-    uptime = datetime.now() - client.start_time if hasattr(client, 'start_time') else "Unknown"
-    await message.edit_text(f"**🚀 ULTRA USERBOT IS ALIVE!**\n⏱️ Uptime: {uptime}")
+    from datetime import datetime
+
+    try:
+        uptime = datetime.now() - client.start_time
+        days, seconds = uptime.days, uptime.seconds
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+
+        uptime_str = f"{days}d {hours}h {minutes}m {seconds}s"
+        await message.edit_text(
+            f"**🚀 ULTRA USERBOT IS ALIVE!**\n⏱️ Uptime: `{uptime_str}`\n👑 Powered by Pyrogram royalty"
+        )
+    except Exception as e:
+        await message.edit_text(f"❌ Error getting uptime:\n<code>{e}</code>")
+
 
 @app.on_message(filters.command("id", prefixes=".") & filters.me)
 async def id_command(client: Client, message: Message):
