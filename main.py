@@ -190,6 +190,8 @@ HELP_CATEGORIES = {
 - `.ban [reply/user_id]` - Ban user
 - `.unban [user_id]` - Unban user
 - `.kick [reply/user_id]` - Kick user
+- `.rmdel` - Kick deleted accounts 
+- `.rmbots` - Kick bots
 - `.promote [reply/user_id] [rank]` - Promote user
 - `.demote [reply/user_id]` - Demote admin
 - `.pin [reply]` - Pin message
