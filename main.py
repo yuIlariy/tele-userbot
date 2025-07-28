@@ -930,6 +930,15 @@ async def clean_service_message(client: Client, message: Message):
         await message.delete()
     except:
         pass  # Silently fail to avoid log spam or hard crashes
+
+@app.on_message(filters.command("remclean", prefixes=".") & filters.me)
+async def remove_clean_mode(client: Client, message: Message):
+    try:
+        client.remove_handler(clean_service_message)
+        await message.edit_text("❎ Clean mode disabled. Service messages will remain.")
+    except Exception as e:
+        await message.edit_text(f"Error disabling clean mode: {str(e)}")
+
         
 
 @app.on_message(filters.command("purgeall", prefixes=".") & filters.me)
