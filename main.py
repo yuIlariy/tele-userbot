@@ -930,7 +930,6 @@ async def roles_cmd(client: Client, message: Message):
 
 
 
-
 @app.on_message(filters.command("pin", prefixes=".") & filters.me)
 async def pin_message(client: Client, message: Message):
     if not await check_admin(client, message.chat.id, client.me.id):
