@@ -20,6 +20,7 @@ import hashlib
 import logging
 import asyncio
 from datetime import datetime, timedelta
+
 from urllib.parse import urlparse, quote_plus
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
@@ -196,6 +197,7 @@ HELP_CATEGORIES = {
 - `.mute [reply/user_id] [time]` - Mute user
 - `.unmute [reply/user_id]` - Unmute user
 - `.purge [reply]` - Delete messages
+- `.purgeall` - Nuke all messages 
 - `.del [reply]` - Delete replied message
 - `.lock [perm]` - Lock chat permissions
 - `.unlock [perm]` - Unlock permissions
@@ -235,6 +237,9 @@ HELP_CATEGORIES = {
     "automation": """**🤖 AUTOMATION & CUSTOM:**
 - `.autoreply [trigger] [response]` - Set auto reply
 - `.delreply [trigger]` - Delete auto reply
+- `.addclean` - Auto clean system messages 
+- `.remclean` - Disable Auto clean
+- `.cleanstatus` - Addclean status
 - `.replies` - List all auto replies
 - `.alias [name] [command]` - Create command alias
 - `.unalias [name]` - Remove alias
