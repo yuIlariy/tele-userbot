@@ -804,7 +804,6 @@ async def remove_bots(client: Client, message: Message):
 from pyrogram import Client, filters
 from pyrogram.types import Message, ChatPrivileges
 
-# 🎭 Role configs with full privileges, emoji, and description
 ADMIN_ROLES = {
     "Admin": {
         "full": True,
@@ -865,15 +864,8 @@ def get_caption(role: str, user_id: int, action: str = "promote") -> str:
         return f"{config['emoji']} **{role.upper()}** promoted `{user_id}`\n`{config['desc']}`"
     return f"🎭 `{user_id}` has been demoted. The throne is silent. 👑💀"
 
-async def check_admin(client: Client, chat_id: int, user_id: int) -> bool:
-    member = await client.get_chat_member(chat_id, user_id)
-    return member.status in ("administrator", "owner")
-
 @app.on_message(filters.command("promote", prefixes=".") & filters.me)
 async def promote_user(client: Client, message: Message):
-    if not await check_admin(client, message.chat.id, client.me.id):
-        return await message.edit_text("❌ I'm not an admin here!")
-
     user_id = None
     role = "Admin"
 
@@ -899,9 +891,6 @@ async def promote_user(client: Client, message: Message):
 
 @app.on_message(filters.command("demote", prefixes=".") & filters.me)
 async def demote_user(client: Client, message: Message):
-    if not await check_admin(client, message.chat.id, client.me.id):
-        return await message.edit_text("❌ I'm not an admin here!")
-
     user_id = None
     if message.reply_to_message:
         user_id = message.reply_to_message.from_user.id
