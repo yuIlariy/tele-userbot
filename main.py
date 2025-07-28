@@ -192,6 +192,7 @@ HELP_CATEGORIES = {
 - `.kick [reply/user_id]` - Kick user
 - `.rmdel` - Kick deleted accounts 
 - `.rmbots` - Kick bots
+- `.roles` - List Available Admins Roles🦔
 - `.promote [reply/user_id] [rank]` - Promote user
 - `.demote [reply/user_id]` - Demote admin
 - `.pin [reply]` - Pin message
