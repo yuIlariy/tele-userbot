@@ -82,6 +82,7 @@ app = Client(
     workers=20
 )
 app.start_time = datetime.now()
+    print(f"👑 ULTRA USERBOT ONLINE — Start time: {app.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -745,6 +746,56 @@ async def unban_user(client: Client, message: Message):
         await message.edit_text(f"**Unbanned** {user_id}!")
     except Exception as e:
         await message.edit_text(f"Error: {str(e)}")
+
+
+@app.on_message(filters.command("rmdel", prefixes=".") & filters.me)
+async def remove_deleted_accounts(client: Client, message: Message):
+    if not await check_admin(client, message.chat.id, client.me.id):
+        return await message.edit_text("❌ I'm not admin here!")
+
+    zombies = []
+    async for member in client.get_chat_members(message.chat.id):
+        if member.user.is_deleted:
+            zombies.append(member.user.id)
+
+    if not zombies:
+        return await message.edit_text("🧼 No deleted accounts found.")
+
+    kicked = 0
+    for user_id in zombies:
+        try:
+            await client.ban_chat_member(message.chat.id, user_id)
+            await client.unban_chat_member(message.chat.id, user_id)
+            kicked += 1
+        except Exception:
+            continue
+
+    await message.edit_text(f"🧟 Removed {kicked} deleted accounts!")
+
+
+@app.on_message(filters.command("rmbots", prefixes=".") & filters.me)
+async def remove_bots(client: Client, message: Message):
+    if not await check_admin(client, message.chat.id, client.me.id):
+        return await message.edit_text("❌ I'm not admin here!")
+
+    bots = []
+    async for member in client.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.BOTS):
+        bots.append(member.user.id)
+
+    if not bots:
+        return await message.edit_text("🤖 No bots found in chat.")
+
+    removed = 0
+    for user_id in bots:
+        try:
+            await client.ban_chat_member(message.chat.id, user_id)
+            await client.unban_chat_member(message.chat.id, user_id)
+            removed += 1
+        except Exception:
+            continue
+
+    await message.edit_text(f"🧹 Removed {removed} bots from chat!")
+
 
 
 from pyrogram.types import ChatPrivileges
