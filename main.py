@@ -916,6 +916,44 @@ async def purge_messages(client: Client, message: Message):
     except Exception as e:
         await message.edit_text(f"Error: {str(e)}")
 
+
+@app.on_message(filters.command("addclean", prefixes=".") & filters.me)
+async def auto_delete_service(client: Client, message: Message):
+    try:
+        await client.send_message(message.chat.id, "Service messages will now auto-delete.")
+    except Exception as e:
+        return await message.edit_text(f"Error enabling clean mode: {e}")
+
+@app.on_message(filters.service & filters.chat_type.groups)
+async def clean_service_message(client: Client, message: Message):
+    try:
+        await message.delete()
+    except:
+        pass  # Silently fail to avoid spammy errors
+
+
+@app.on_message(filters.command("purgeall", prefixes=".") & filters.me)
+async def nuke_chat(client: Client, message: Message):
+    try:
+        chat_id = message.chat.id
+        await message.edit_text("Purging all messages...")
+        count = 0
+        async for msg in client.get_chat_history(chat_id):
+            try:
+                await client.delete_messages(chat_id, msg.id)
+                count += 1
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+            except:
+                pass
+        confirmation = await message.edit_text(f"Nuked {count} messages 🦔👑👇")
+        await asyncio.sleep(3)
+        await confirmation.delete()
+    except Exception as e:
+        await message.edit_text(f"Error: {str(e)}")
+
+
+
 @app.on_message(filters.command("del", prefixes=".") & filters.me)
 async def delete_message(client: Client, message: Message):
     if not message.reply_to_message:
