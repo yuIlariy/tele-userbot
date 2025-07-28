@@ -800,7 +800,8 @@ async def remove_bots(client: Client, message: Message):
 
 
 
-from pyrogram.types import ChatPrivileges
+from pyrogram import Client, filters
+from pyrogram.types import Message, ChatPrivileges
 
 ADMIN_PRESETS = {
     "Admin": dict(full=True),
@@ -850,6 +851,10 @@ def get_admin_privileges(title: str) -> ChatPrivileges:
 def get_caption(title: str, user_id: int) -> str:
     return CAPTION_FLARE.get(title, f"✅ Promoted `{user_id}` with title `{title}`.")
 
+async def check_admin(client: Client, chat_id: int, user_id: int) -> bool:
+    member = await client.get_chat_member(chat_id, user_id)
+    return member.status in ("administrator", "owner")
+
 @app.on_message(filters.command("promote", prefixes=".") & filters.me)
 async def promote_user(client: Client, message: Message):
     if not await check_admin(client, message.chat.id, client.me.id):
@@ -872,21 +877,11 @@ async def promote_user(client: Client, message: Message):
 
     try:
         privileges = get_admin_privileges(rank)
-        await client.promote_chat_member(
-            chat_id=message.chat.id,
-            user_id=user_id,
-            privileges=privileges
-        )
+        await client.promote_chat_member(message.chat.id, user_id, privileges)
         await client.set_administrator_title(message.chat.id, user_id, rank)
-        caption = get_caption(rank, user_id)
-        await message.edit_text(caption)
+        await message.edit_text(get_caption(rank, user_id))
     except Exception as e:
         await message.edit_text(f"❌ Error:\n<code>{str(e)}</code>")
-
-
-
-
-from pyrogram.types import ChatPrivileges
 
 @app.on_message(filters.command("demote", prefixes=".") & filters.me)
 async def demote_user(client: Client, message: Message):
@@ -902,18 +897,8 @@ async def demote_user(client: Client, message: Message):
         return await message.edit_text("⚠️ Reply to a user or provide their ID to demote.")
 
     try:
-        # 💣 Explicitly strip all rights using empty ChatPrivileges
-        empty_rights = ChatPrivileges()
-        await client.promote_chat_member(
-            chat_id=message.chat.id,
-            user_id=user_id,
-            privileges=empty_rights
-        )
-
-        # 🧹 Reset custom admin title
+        await client.promote_chat_member(message.chat.id, user_id, ChatPrivileges())
         await client.set_administrator_title(message.chat.id, user_id, "")
-
-        # 🎭 Flair
         await message.edit_text(f"🎭 `{user_id}` has been demoted. The throne is silent. 👑💀")
     except Exception as e:
         await message.edit_text(f"❌ Error while demoting:\n<code>{str(e)}</code>")
