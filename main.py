@@ -82,7 +82,7 @@ app = Client(
     workers=20
 )
 app.start_time = datetime.now()
-    print(f"👑 ULTRA USERBOT ONLINE — Start time: {app.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"👑 ULTRA USERBOT ONLINE — Start time: {app.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
