@@ -13,3 +13,5 @@ pyrofork
 tgcrypto
 flask
 werkzeug==2.2.2
+speedtest-cli
+psutil
