@@ -917,27 +917,53 @@ async def purge_messages(client: Client, message: Message):
         await message.edit_text(f"Error: {str(e)}")
 
 
+# 🧼 Global reference for service message handler
+clean_handler = None
+
+# 🔘 Enable clean mode
 @app.on_message(filters.command("addclean", prefixes=".") & filters.me)
 async def auto_delete_service(client: Client, message: Message):
+    global clean_handler
     try:
-        await client.send_message(message.chat.id, "Service messages will now auto-delete.")
+        if clean_handler is None:
+            clean_handler = app.on_message(filters.service)(
+                lambda client, message: asyncio.create_task(clean_service_message(client, message))
+            )
+            await message.edit_text("✅ Clean mode enabled. Service messages will auto-delete.")
+        else:
+            await message.edit_text("ℹ️ Clean mode was already active.")
     except Exception as e:
-        return await message.edit_text(f"Error enabling clean mode: {e}")
+        await message.edit_text(f"⚠️ Error enabling clean mode:\n<code>{e}</code>")
 
-@app.on_message(filters.service)
+# 🧹 Handler logic to delete service messages
 async def clean_service_message(client: Client, message: Message):
     try:
         await message.delete()
     except:
-        pass  # Silently fail to avoid log spam or hard crashes
+        pass  # Avoid crash on bad deletes
 
+# ❎ Disable clean mode
 @app.on_message(filters.command("remclean", prefixes=".") & filters.me)
 async def remove_clean_mode(client: Client, message: Message):
+    global clean_handler
     try:
-        client.remove_handler(clean_service_message)
-        await message.edit_text("❎ Clean mode disabled. Service messages will remain.")
+        if clean_handler:
+            app.remove_handler(*clean_handler)
+            clean_handler = None
+            await message.edit_text("❎ Clean mode disabled. Service messages will remain.")
+        else:
+            await message.edit_text("ℹ️ Clean mode was not active.")
     except Exception as e:
-        await message.edit_text(f"Error disabling clean mode: {str(e)}")
+        await message.edit_text(f"⚠️ Error disabling clean mode:\n<code>{e}</code>")
+
+# 📊 Check clean mode status
+@app.on_message(filters.command("cleanstatus", prefixes=".") & filters.me)
+async def check_clean_mode(client: Client, message: Message):
+    if clean_handler:
+        await message.edit_text("🧼 Clean mode is <b>active</b> — service messages will be auto-deleted.")
+    else:
+        await message.edit_text("🧊 Clean mode is <b>disabled</b> — service messages are left untouched.")
+
 
         
 
