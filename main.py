@@ -727,16 +727,17 @@ async def unban_user(client: Client, message: Message):
     except Exception as e:
         await message.edit_text(f"Error: {str(e)}")
 
+
+from pyrogram.types import ChatPrivileges
+
 ADMIN_PRESETS = {
     "Admin": dict(full=True),
     "Godmode": dict(full=True),
     "Overlord": dict(full=True),
     "Moderator": dict(
-        can_change_info=False,
         can_delete_messages=True,
         can_restrict_members=True,
-        can_pin_messages=True,
-        can_promote_members=False
+        can_pin_messages=True
     ),
     "Minion": dict(
         can_invite_users=True,
@@ -757,10 +758,11 @@ CAPTION_FLARE = {
     "Overlord": "☄️ Supreme authority transferred. Good luck, mortals."
 }
 
-def get_admin_rights(title: str):
+def get_admin_privileges(title: str) -> ChatPrivileges:
     preset = ADMIN_PRESETS.get(title, dict(full=True))
     if preset.get("full"):
-        return dict(
+        return ChatPrivileges(
+            can_manage_chat=True,
             can_change_info=True,
             can_post_messages=True,
             can_edit_messages=True,
@@ -769,20 +771,17 @@ def get_admin_rights(title: str):
             can_restrict_members=True,
             can_pin_messages=True,
             can_promote_members=True,
-            can_manage_video_chats=True,
-            can_manage_chat=True
+            can_manage_video_chats=True
         )
-    return preset
+    return ChatPrivileges(**preset)
 
-def get_caption(title: str, user_id: int):
-    default = f"✅ Promoted `{user_id}` with title `{title}`."
-    return CAPTION_FLARE.get(title, default)
-
+def get_caption(title: str, user_id: int) -> str:
+    return CAPTION_FLARE.get(title, f"✅ Promoted `{user_id}` with title `{title}`.")
 
 @app.on_message(filters.command("promote", prefixes=".") & filters.me)
 async def promote_user(client: Client, message: Message):
     if not await check_admin(client, message.chat.id, client.me.id):
-        return await message.edit_text("❌ I'm not admin here!")
+        return await message.edit_text("❌ I'm not an admin here!")
 
     user_id = None
     rank = "Admin"
@@ -792,16 +791,20 @@ async def promote_user(client: Client, message: Message):
         if len(message.command) > 1:
             rank = " ".join(message.command[1:])
     elif len(message.command) > 2:
-        user_id = message.command[1]
+        user_id = int(message.command[1])
         rank = " ".join(message.command[2:])
     elif len(message.command) > 1:
-        user_id = message.command[1]
+        user_id = int(message.command[1])
     else:
         return await message.edit_text("⚠️ Reply to user or provide user ID and rank.")
 
     try:
-        rights = get_admin_rights(rank)
-        await client.promote_chat_member(message.chat.id, user_id, **rights)
+        privileges = get_admin_privileges(rank)
+        await client.promote_chat_member(
+            chat_id=message.chat.id,
+            user_id=user_id,
+            privileges=privileges
+        )
         await client.set_administrator_title(message.chat.id, user_id, rank)
         caption = get_caption(rank, user_id)
         await message.edit_text(caption)
@@ -810,6 +813,8 @@ async def promote_user(client: Client, message: Message):
 
 
 
+
+from pyrogram.types import ChatPrivileges
 
 @app.on_message(filters.command("demote", prefixes=".") & filters.me)
 async def demote_user(client: Client, message: Message):
@@ -820,31 +825,24 @@ async def demote_user(client: Client, message: Message):
     if message.reply_to_message:
         user_id = message.reply_to_message.from_user.id
     elif len(message.command) > 1:
-        user_id = message.command[1]
+        user_id = int(message.command[1])
     else:
         return await message.edit_text("⚠️ Reply to a user or provide their ID to demote.")
 
     try:
-        # 💣 Revoke all admin privileges explicitly
+        # 💣 Explicitly strip all rights using empty ChatPrivileges
+        empty_rights = ChatPrivileges()
         await client.promote_chat_member(
-            message.chat.id,
-            user_id,
-            can_change_info=False,
-            can_post_messages=False,
-            can_edit_messages=False,
-            can_delete_messages=False,
-            can_invite_users=False,
-            can_restrict_members=False,
-            can_pin_messages=False,
-            can_promote_members=False,
-            can_manage_video_chats=False,
-            can_manage_chat=False
+            chat_id=message.chat.id,
+            user_id=user_id,
+            privileges=empty_rights
         )
 
-        # 🧹 Also reset their custom admin title to blank
+        # 🧹 Reset custom admin title
         await client.set_administrator_title(message.chat.id, user_id, "")
 
-        await message.edit_text(f"🧹 **Stripped all powers** from `{user_id}`. The crown has been revoked.")
+        # 🎭 Flair
+        await message.edit_text(f"🎭 `{user_id}` has been demoted. The throne is silent. 👑💀")
     except Exception as e:
         await message.edit_text(f"❌ Error while demoting:\n<code>{str(e)}</code>")
 
