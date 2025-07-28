@@ -803,37 +803,47 @@ async def remove_bots(client: Client, message: Message):
 from pyrogram import Client, filters
 from pyrogram.types import Message, ChatPrivileges
 
-ADMIN_PRESETS = {
-    "Admin": dict(full=True),
-    "Godmode": dict(full=True),
-    "Overlord": dict(full=True),
-    "Moderator": dict(
-        can_delete_messages=True,
-        can_restrict_members=True,
-        can_pin_messages=True
-    ),
-    "Minion": dict(
-        can_invite_users=True,
-        can_pin_messages=True
-    ),
-    "Ghost": dict(
-        can_delete_messages=True,
-        can_manage_video_chats=True
-    )
+# 🎭 Role configs with full privileges, emoji, and description
+ADMIN_ROLES = {
+    "Admin": {
+        "full": True,
+        "emoji": "🔴",
+        "desc": "Full control access"
+    },
+    "Godmode": {
+        "full": True,
+        "emoji": "🧨",
+        "desc": "Nuclear override privileges"
+    },
+    "Overlord": {
+        "full": True,
+        "emoji": "☄️",
+        "desc": "Supreme authority"
+    },
+    "Moderator": {
+        "can_delete_messages": True,
+        "can_restrict_members": True,
+        "can_pin_messages": True,
+        "emoji": "🛡️",
+        "desc": "Moderation powers (delete, restrict, pin)"
+    },
+    "Minion": {
+        "can_invite_users": True,
+        "can_pin_messages": True,
+        "emoji": "🪜",
+        "desc": "Invite and pin access"
+    },
+    "Ghost": {
+        "can_delete_messages": True,
+        "can_manage_video_chats": True,
+        "emoji": "👻",
+        "desc": "Silent powers (delete, manage VC)"
+    }
 }
 
-CAPTION_FLARE = {
-    "Godmode": "🧨 Boom! Promoted with *nuclear override* capabilities!",
-    "Moderator": "🛡️ Granted watchdog rights — guard the gates.",
-    "Minion": "🪜 Minion deployed. Honorary chores enabled.",
-    "Ghost": "👻 Whispered into existence... spectral admin active.",
-    "Admin": "👑 Promoted with full rights. Rule wisely.",
-    "Overlord": "☄️ Supreme authority transferred. Good luck, mortals."
-}
-
-def get_admin_privileges(title: str) -> ChatPrivileges:
-    preset = ADMIN_PRESETS.get(title, dict(full=True))
-    if preset.get("full"):
+def get_admin_privileges(role: str) -> ChatPrivileges:
+    config = ADMIN_ROLES.get(role.title(), {"full": True})
+    if config.get("full"):
         return ChatPrivileges(
             can_manage_chat=True,
             can_change_info=True,
@@ -846,10 +856,13 @@ def get_admin_privileges(title: str) -> ChatPrivileges:
             can_promote_members=True,
             can_manage_video_chats=True
         )
-    return ChatPrivileges(**preset)
+    return ChatPrivileges(**{k: v for k, v in config.items() if isinstance(v, bool)})
 
-def get_caption(title: str, user_id: int) -> str:
-    return CAPTION_FLARE.get(title, f"✅ Promoted `{user_id}` with title `{title}`.")
+def get_caption(role: str, user_id: int, action: str = "promote") -> str:
+    config = ADMIN_ROLES.get(role.title(), {"emoji": "🔘", "desc": "Standard access"})
+    if action == "promote":
+        return f"{config['emoji']} **{role.upper()}** promoted `{user_id}`\n`{config['desc']}`"
+    return f"🎭 `{user_id}` has been demoted. The throne is silent. 👑💀"
 
 async def check_admin(client: Client, chat_id: int, user_id: int) -> bool:
     member = await client.get_chat_member(chat_id, user_id)
@@ -861,25 +874,25 @@ async def promote_user(client: Client, message: Message):
         return await message.edit_text("❌ I'm not an admin here!")
 
     user_id = None
-    rank = "Admin"
+    role = "Admin"
 
     if message.reply_to_message:
         user_id = message.reply_to_message.from_user.id
         if len(message.command) > 1:
-            rank = " ".join(message.command[1:])
+            role = " ".join(message.command[1:])
     elif len(message.command) > 2:
         user_id = int(message.command[1])
-        rank = " ".join(message.command[2:])
+        role = " ".join(message.command[2:])
     elif len(message.command) > 1:
         user_id = int(message.command[1])
     else:
-        return await message.edit_text("⚠️ Reply to user or provide user ID and rank.")
+        return await message.edit_text("⚠️ Reply to user or provide user ID and role.")
 
     try:
-        privileges = get_admin_privileges(rank)
+        privileges = get_admin_privileges(role)
         await client.promote_chat_member(message.chat.id, user_id, privileges)
-        await client.set_administrator_title(message.chat.id, user_id, rank)
-        await message.edit_text(get_caption(rank, user_id))
+        await client.set_administrator_title(message.chat.id, user_id, role.title())
+        await message.edit_text(get_caption(role, user_id, "promote"))
     except Exception as e:
         await message.edit_text(f"❌ Error:\n<code>{str(e)}</code>")
 
@@ -899,9 +912,21 @@ async def demote_user(client: Client, message: Message):
     try:
         await client.promote_chat_member(message.chat.id, user_id, ChatPrivileges())
         await client.set_administrator_title(message.chat.id, user_id, "")
-        await message.edit_text(f"🎭 `{user_id}` has been demoted. The throne is silent. 👑💀")
+        await message.edit_text(get_caption("Demoted", user_id, "demote"))
     except Exception as e:
         await message.edit_text(f"❌ Error while demoting:\n<code>{str(e)}</code>")
+
+@app.on_message(filters.command("roles", prefixes=".") & filters.me)
+async def roles_cmd(client: Client, message: Message):
+    text = "🎭 **Available Roles:**\n\n"
+    for role, config in ADMIN_ROLES.items():
+        emoji = config.get("emoji", "🔘")
+        desc = config.get("desc", "No description provided")
+        text += f"{emoji} **{role}**\n`{desc}`\n\n"
+    text += "**Usage:** `.promote <user> <role>`"
+    await message.reply_text(text)
+
+
 
 
 
