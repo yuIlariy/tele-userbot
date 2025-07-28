@@ -924,13 +924,13 @@ async def auto_delete_service(client: Client, message: Message):
     except Exception as e:
         return await message.edit_text(f"Error enabling clean mode: {e}")
 
-@app.on_message(filters.service & filters.chat_type.groups)
+@app.on_message(filters.service)
 async def clean_service_message(client: Client, message: Message):
     try:
         await message.delete()
     except:
-        pass  # Silently fail to avoid spammy errors
-
+        pass  # Silently fail to avoid log spam or hard crashes
+        
 
 @app.on_message(filters.command("purgeall", prefixes=".") & filters.me)
 async def nuke_chat(client: Client, message: Message):
