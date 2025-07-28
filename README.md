@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Pyrogram](https://img.shields.io/badge/Pyrogram-2.0+-green.svg)](https://pyrogram.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Telegram](https://img.shields.io/badge/Telegram-@devgaganin-blue.svg)](https://t.me/devgaganin)
+[![Telegram](https://img.shields.io/badge/Telegram-@devgaganin-blue.svg)](https://t.me/team_spy_pro)
 
 **A powerful, feature-rich Telegram userbot with versatile commands for automation, media management, and enhanced Telegram experience.**
 **✨ Note: this code is bot ready code means you can run userbot as well use second client for bot for callbacks and functions ✨**
