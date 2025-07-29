@@ -3211,41 +3211,47 @@ async def system_info(client: Client, message: Message):
     try:
         import psutil
         import platform
-        
+        from datetime import datetime
 
+        # 🖥️ System info
         uname = platform.uname()
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         uptime = datetime.now() - boot_time
-        
-        info = "**System Information:**\n"
-        info += f"System: {uname.system}\n"
-        info += f"Node Name: {uname.node}\n"
-        info += f"Release: {uname.release}\n"
-        info += f"Version: {uname.version}\n"
-        info += f"Machine: {uname.machine}\n"
-        info += f"Processor: {uname.processor}\n"
-        info += f"Boot Time: {boot_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-        info += f"Uptime: {uptime}\n\n"
-        
+        days, rem = divmod(uptime.total_seconds(), 86400)
+        hours, rem = divmod(rem, 3600)
+        minutes, seconds = divmod(rem, 60)
 
-        info += "**CPU Info:**\n"
-        info += f"Physical cores: {psutil.cpu_count(logical=False)}\n"
-        info += f"Total cores: {psutil.cpu_count(logical=True)}\n"
-        info += f"Max Frequency: {psutil.cpu_freq().max:.2f}Mhz\n"
-        info += f"Current Frequency: {psutil.cpu_freq().current:.2f}Mhz\n"
-        info += f"CPU Usage: {psutil.cpu_percent()}%\n\n"
-        
+        sysinfo = "**🧠 System Information:**\n"
+        sysinfo += f"• System: `{uname.system}`\n"
+        sysinfo += f"• Node Name: `{uname.node}`\n"
+        sysinfo += f"• Release: `{uname.release}`\n"
+        sysinfo += f"• Version: `{uname.version}`\n"
+        sysinfo += f"• Machine: `{uname.machine}`\n"
+        sysinfo += f"• Processor: `{uname.processor}`\n"
+        sysinfo += f"• Boot Time: `{boot_time.strftime('%Y-%m-%d %H:%M:%S')}`\n"
+        sysinfo += f"• Uptime: `{int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s`\n\n"
 
+        # ⚙️ CPU info
+        freq = psutil.cpu_freq()
+        sysinfo += "**⚙️ CPU Info:**\n"
+        sysinfo += f"• Physical Cores: `{psutil.cpu_count(logical=False)}`\n"
+        sysinfo += f"• Total Cores: `{psutil.cpu_count(logical=True)}`\n"
+        sysinfo += f"• Max Frequency: `{freq.max:.2f} MHz`\n"
+        sysinfo += f"• Current Frequency: `{freq.current:.2f} MHz`\n"
+        sysinfo += f"• Usage: `{psutil.cpu_percent()}%`\n\n"
+
+        # 📦 Memory info
         svmem = psutil.virtual_memory()
-        info += "**Memory Information:**\n"
-        info += f"Total: {svmem.total / (1024**3):.2f} GB\n"
-        info += f"Available: {svmem.available / (1024**3):.2f} GB\n"
-        info += f"Used: {svmem.used / (1024**3):.2f} GB\n"
-        info += f"Percentage: {svmem.percent}%\n"
-        
-        await message.edit_text(info)
+        sysinfo += "**📦 Memory Info:**\n"
+        sysinfo += f"• Total: `{svmem.total / (1024**3):.2f} GB`\n"
+        sysinfo += f"• Available: `{svmem.available / (1024**3):.2f} GB`\n"
+        sysinfo += f"• Used: `{svmem.used / (1024**3):.2f} GB`\n"
+        sysinfo += f"• Usage: `{svmem.percent}%`\n"
+
+        await message.edit_text(sysinfo)
     except Exception as e:
-        await message.edit_text(f"**Error:** {str(e)}")
+        await message.edit_text(f"❌ Error in `.sysinfo`:\n<code>{str(e)}</code>")
+
 
 @app.on_message(filters.command("speedtest", prefixes=".") & filters.me)
 async def speed_test(client: Client, message: Message):
