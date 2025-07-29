@@ -3225,11 +3225,6 @@ from pyrogram.types import Message
 import psutil, platform, speedtest
 from datetime import datetime
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-import psutil, platform, speedtest
-from datetime import datetime
-
 @app.on_message(filters.command("sysinfo", prefixes=".") & filters.me)
 async def system_info(client: Client, message: Message):
     try:
@@ -3240,54 +3235,55 @@ async def system_info(client: Client, message: Message):
         hours, rem = divmod(rem, 3600)
         minutes, seconds = divmod(rem, 60)
 
-        info = "<b>🧠 System Information:</b>\n"
-        info += f"• System: <code>{uname.system}</code>\n"
-        info += f"• Node: <code>{uname.node}</code>\n"
-        info += f"• Release: <code>{uname.release}</code>\n"
-        info += f"• Version: <code>{uname.version}</code>\n"
-        info += f"• Machine: <code>{uname.machine}</code>\n"
-        info += f"• Processor: <code>{uname.processor}</code>\n"
-        info += f"• Boot Time: <code>{boot_time.strftime('%Y-%m-%d %H:%M:%S')}</code>\n"
-        info += f"• Uptime: <code>{int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s</code>\n\n"
+        info = "**🧠 System Information:**\n"
+        info += f"• System: `{uname.system}`\n"
+        info += f"• Node: `{uname.node}`\n"
+        info += f"• Release: `{uname.release}`\n"
+        info += f"• Version: `{uname.version}`\n"
+        info += f"• Machine: `{uname.machine}`\n"
+        info += f"• Processor: `{uname.processor}`\n"
+        info += f"• Boot Time: `{boot_time.strftime('%Y-%m-%d %H:%M:%S')}`\n"
+        info += f"• Uptime: `{int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s`\n\n"
 
         freq = psutil.cpu_freq()
-        info += "<b>⚙️ CPU Info:</b>\n"
-        info += f"• Physical Cores: <code>{psutil.cpu_count(logical=False)}</code>\n"
-        info += f"• Total Cores: <code>{psutil.cpu_count(logical=True)}</code>\n"
-        info += f"• Max Freq: <code>{freq.max:.2f} MHz</code>\n"
-        info += f"• Current Freq: <code>{freq.current:.2f} MHz</code>\n"
-        info += f"• Usage: <code>{psutil.cpu_percent()}%</code>\n\n"
+        info += "**⚙️ CPU Info:**\n"
+        info += f"• Physical Cores: `{psutil.cpu_count(logical=False)}`\n"
+        info += f"• Total Cores: `{psutil.cpu_count(logical=True)}`\n"
+        info += f"• Max Freq: `{freq.max:.2f} MHz`\n"
+        info += f"• Current Freq: `{freq.current:.2f} MHz`\n"
+        info += f"• Usage: `{psutil.cpu_percent()}%`\n\n"
 
         svmem = psutil.virtual_memory()
-        info += "<b>📦 Memory Info:</b>\n"
-        info += f"• Total: <code>{svmem.total / (1024**3):.2f} GB</code>\n"
-        info += f"• Available: <code>{svmem.available / (1024**3):.2f} GB</code>\n"
-        info += f"• Used: <code>{svmem.used / (1024**3):.2f} GB</code>\n"
-        info += f"• Usage: <code>{svmem.percent}%</code>"
+        info += "**📦 Memory Info:**\n"
+        info += f"• Total: `{svmem.total / (1024**3):.2f} GB`\n"
+        info += f"• Available: `{svmem.available / (1024**3):.2f} GB`\n"
+        info += f"• Used: `{svmem.used / (1024**3):.2f} GB`\n"
+        info += f"• Usage: `{svmem.percent}%`"
 
-        await client.send_message(message.chat.id, info, parse_mode="HTML")
+        await message.reply(info)
     except Exception as e:
-        await client.send_message(message.chat.id, f"❌ Error in <code>.sysinfo</code>:\n<code>{str(e)}</code>", parse_mode="HTML")
+        await message.reply(f"❌ Error in `.sysinfo`:\n`{str(e)}`")
 
 @app.on_message(filters.command("speedtest", prefixes=".") & filters.me)
 async def speed_test(client: Client, message: Message):
     try:
         await message.reply("📶 Running speed test... please wait")
+
         st = speedtest.Speedtest()
         st.get_best_server()
         download = st.download() / 1024 / 1024
         upload = st.upload() / 1024 / 1024
         ping = st.results.ping
 
-        result = "<b>⚡ Speed Test Result:</b>\n\n"
-        result += f"📡 <b>Ping:</b> <code>{ping:.2f} ms</code>\n"
-        result += f"⬇️ <b>Download:</b> <code>{download:.2f} Mbps</code>\n"
-        result += f"⬆️ <b>Upload:</b> <code>{upload:.2f} Mbps</code>\n"
-        result += "\n☄️ <b><i>Powered by Pyrogram + speedtest-cli</i></b>"
+        result = "**⚡ Speed Test Result:**\n\n"
+        result += f"📡 **Ping:** `{ping:.2f} ms`\n"
+        result += f"⬇️ **Download:** `{download:.2f} Mbps`\n"
+        result += f"⬆️ **Upload:** `{upload:.2f} Mbps`\n"
+        result += "\n☄️ **_Powered by Pyrogram + speedtest-cli_**"
 
-        await client.send_message(message.chat.id, result, parse_mode="HTML")
+        await message.reply(result)
     except Exception as e:
-        await client.send_message(message.chat.id, f"❌ Speedtest error:\n<code>{str(e)}</code>", parse_mode="HTML")
+        await message.reply(f"❌ Speedtest error:\n`{str(e)}`")
 
 
 
