@@ -3225,40 +3225,45 @@ from pyrogram.types import Message
 import psutil, platform, speedtest
 from datetime import datetime
 
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from datetime import datetime
+import psutil, platform, speedtest
+
 @app.on_message(filters.command("sysinfo", prefixes=".") & filters.me)
 async def system_info(client: Client, message: Message):
     try:
         uname = platform.uname()
         boot_time = datetime.fromtimestamp(psutil.boot_time())
         uptime = datetime.now() - boot_time
-        days, rem = divmod(uptime.total_seconds(), 86400)
-        hours, rem = divmod(rem, 3600)
+        days = uptime.days
+        hours, rem = divmod(uptime.seconds, 3600)
         minutes, seconds = divmod(rem, 60)
 
         info = "**🧠 System Information:**\n"
         info += f"• System: `{uname.system}`\n"
-        info += f"• Node: `{uname.node}`\n"
+        info += f"• Node Name: `{uname.node}`\n"
         info += f"• Release: `{uname.release}`\n"
         info += f"• Version: `{uname.version}`\n"
         info += f"• Machine: `{uname.machine}`\n"
         info += f"• Processor: `{uname.processor}`\n"
         info += f"• Boot Time: `{boot_time.strftime('%Y-%m-%d %H:%M:%S')}`\n"
-        info += f"• Uptime: `{int(days)}d {int(hours)}h {int(minutes)}m {int(seconds)}s`\n\n"
+        info += f"• Uptime: `{days}d {hours}h {minutes}m {seconds}s`\n\n"
 
         freq = psutil.cpu_freq()
         info += "**⚙️ CPU Info:**\n"
-        info += f"• Physical Cores: `{psutil.cpu_count(logical=False)}`\n"
-        info += f"• Total Cores: `{psutil.cpu_count(logical=True)}`\n"
-        info += f"• Max Freq: `{freq.max:.2f} MHz`\n"
-        info += f"• Current Freq: `{freq.current:.2f} MHz`\n"
-        info += f"• Usage: `{psutil.cpu_percent()}%`\n\n"
+        info += f"• Physical cores: `{psutil.cpu_count(logical=False)}`\n"
+        info += f"• Total cores: `{psutil.cpu_count(logical=True)}`\n"
+        info += f"• Max Frequency: `{freq.max:.2f} MHz`\n"
+        info += f"• Current Frequency: `{freq.current:.2f} MHz`\n"
+        info += f"• CPU Usage: `{psutil.cpu_percent()}%`\n\n"
 
         svmem = psutil.virtual_memory()
-        info += "**📦 Memory Info:**\n"
+        info += "**📦 Memory Information:**\n"
         info += f"• Total: `{svmem.total / (1024**3):.2f} GB`\n"
         info += f"• Available: `{svmem.available / (1024**3):.2f} GB`\n"
         info += f"• Used: `{svmem.used / (1024**3):.2f} GB`\n"
-        info += f"• Usage: `{svmem.percent}%`"
+        info += f"• Usage: `{svmem.percent}%`\n"
 
         await message.reply(info)
     except Exception as e:
@@ -3276,14 +3281,15 @@ async def speed_test(client: Client, message: Message):
         ping = st.results.ping
 
         result = "**⚡ Speed Test Result:**\n\n"
-        result += f"📡 **Ping:** `{ping:.2f} ms`\n"
-        result += f"⬇️ **Download:** `{download:.2f} Mbps`\n"
-        result += f"⬆️ **Upload:** `{upload:.2f} Mbps`\n"
-        result += "\n☄️ **_Powered by Pyrogram + speedtest-cli_**"
+        result += f"📡 Ping: `{ping:.2f} ms`\n"
+        result += f"⬇️ Download: `{download:.2f} Mbps`\n"
+        result += f"⬆️ Upload: `{upload:.2f} Mbps`\n"
+        result += "\n☄️ *_Powered by Pyrogram + speedtest-cli_*"
 
         await message.reply(result)
     except Exception as e:
         await message.reply(f"❌ Speedtest error:\n`{str(e)}`")
+
 
 
 
