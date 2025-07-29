@@ -3225,6 +3225,11 @@ from pyrogram.types import Message
 import psutil, platform, speedtest
 from datetime import datetime
 
+from pyrogram import Client, filters
+from pyrogram.types import Message
+import psutil, platform, speedtest
+from datetime import datetime
+
 @app.on_message(filters.command("sysinfo", prefixes=".") & filters.me)
 async def system_info(client: Client, message: Message):
     try:
@@ -3260,16 +3265,14 @@ async def system_info(client: Client, message: Message):
         info += f"• Used: <code>{svmem.used / (1024**3):.2f} GB</code>\n"
         info += f"• Usage: <code>{svmem.percent}%</code>"
 
-        await message.edit_text(info, parse_mode="HTML")
+        await client.send_message(message.chat.id, info, parse_mode="HTML")
     except Exception as e:
-        await message.edit_text(f"❌ Error in <code>.sysinfo</code>:\n<code>{str(e)}</code>", parse_mode="HTML")
-
+        await client.send_message(message.chat.id, f"❌ Error in <code>.sysinfo</code>:\n<code>{str(e)}</code>", parse_mode="HTML")
 
 @app.on_message(filters.command("speedtest", prefixes=".") & filters.me)
 async def speed_test(client: Client, message: Message):
     try:
-        await message.edit_text("📶 Running speed test... please wait")
-
+        await message.reply("📶 Running speed test... please wait")
         st = speedtest.Speedtest()
         st.get_best_server()
         download = st.download() / 1024 / 1024
@@ -3282,9 +3285,9 @@ async def speed_test(client: Client, message: Message):
         result += f"⬆️ <b>Upload:</b> <code>{upload:.2f} Mbps</code>\n"
         result += "\n☄️ <b><i>Powered by Pyrogram + speedtest-cli</i></b>"
 
-        await message.edit_text(result, parse_mode="HTML")
+        await client.send_message(message.chat.id, result, parse_mode="HTML")
     except Exception as e:
-        await message.edit_text(f"❌ Speedtest error:\n<code>{str(e)}</code>", parse_mode="HTML")
+        await client.send_message(message.chat.id, f"❌ Speedtest error:\n<code>{str(e)}</code>", parse_mode="HTML")
 
 
 
