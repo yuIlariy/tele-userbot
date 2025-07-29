@@ -3054,19 +3054,33 @@ async def auto_reaction_handler(client: Client, message: Message):
                     pass
                 break
 
-@app.on_message(filters.command("ghost", prefixes=".") & filters.me)
-async def ghost_mode(client: Client, message: Message):
-    if len(message.command) < 2:
-        return await message.edit_text("Usage: .ghost [on/off]")
-    
-    mode = message.command[1].lower()
-    if mode == "on":
+from pyrogram import Client, filters
+from pyrogram.types import Message
+import asyncio
 
-        await message.edit_text("**Ghost mode activated!** (Implementation pending)")
+# 🪄 Toggle state holder (simple per-instance cache)
+GHOST_MODE = {}
+
+@app.on_message(filters.command("ghost", prefixes=".") & filters.me)
+async def ghost_toggle(client: Client, message: Message):
+    mode = message.command[1].lower() if len(message.command) > 1 else None
+    chat_id = message.chat.id
+
+    if mode == "on":
+        GHOST_MODE[chat_id] = True
+        await message.edit_text("👻 **Ghost mode activated!**\nMessages will self-destruct silently.")
     elif mode == "off":
-        await message.edit_text("**Ghost mode deactivated!**")
+        GHOST_MODE.pop(chat_id, None)
+        await message.edit_text("☀️ **Ghost mode deactivated!**")
     else:
-        await message.edit_text("Usage: .ghost [on/off]")
+        await message.edit_text("⚠️ Usage: `.ghost on` or `.ghost off`")
+
+@app.on_message(filters.me & ~filters.command(["ghost", "help"], prefixes="."))
+async def ghost_cleanup(client: Client, message: Message):
+    if GHOST_MODE.get(message.chat.id):
+        await asyncio.sleep(10)  # ⏳ Delay before deletion
+        await message.delete()
+
 
 @app.on_message(filters.command("antispam", prefixes=".") & filters.me)
 async def antispam_protection(client: Client, message: Message):
@@ -3253,9 +3267,29 @@ async def system_info(client: Client, message: Message):
         await message.edit_text(f"❌ Error in `.sysinfo`:\n<code>{str(e)}</code>")
 
 
+import speedtest
+
 @app.on_message(filters.command("speedtest", prefixes=".") & filters.me)
 async def speed_test(client: Client, message: Message):
-    await message.edit_text("**Running speed test...** (Implementation pending)")
+    try:
+        await message.edit_text("📶 Running speed test... please wait")
+
+        st = speedtest.Speedtest()
+        st.get_best_server()
+        download_speed = st.download() / 1024 / 1024  # in Mbps
+        upload_speed = st.upload() / 1024 / 1024      # in Mbps
+        ping = st.results.ping
+
+        result_text = "**⚡ Speed Test Result:**\n\n"
+        result_text += f"📡 **Ping:** `{ping:.2f} ms`\n"
+        result_text += f"⬇️ **Download:** `{download_speed:.2f} Mbps`\n"
+        result_text += f"⬆️ **Upload:** `{upload_speed:.2f} Mbps`\n"
+        result_text += f"\n\n☄️ <b><i>Powered by Pyrogram and speedtest-cli</i></b>"
+
+        await message.edit_text(result_text)
+    except Exception as e:
+        await message.edit_text(f"❌ Speedtest error:\n<code>{str(e)}</code>")
+
 
 @app.on_message(filters.command("logs", prefixes=".") & filters.me)
 async def get_logs(client: Client, message: Message):
@@ -3617,6 +3651,7 @@ async def get_time(client: Client, message: Message):
                             'paris': 'Europe/Paris',
                             'berlin': 'Europe/Berlin',
                             'moscow': 'Europe/Moscow',
+                            'nairobi': 'Africa/Nairobi',
                             'delhi': 'Asia/Kolkata',
                             'mumbai': 'Asia/Kolkata',
                             'kolkata': 'Asia/Kolkata',
