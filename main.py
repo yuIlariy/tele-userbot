@@ -681,7 +681,7 @@ async def alive_command(client: Client, message: Message):
 
         uptime_str = f"{days}d {hours}h {minutes}m {seconds}s"
         await message.edit_text(
-            f"**🚀 ULTRA USERBOT IS ALIVE!**\n⏱️ Uptime: `{uptime_str}`\n👑 Powered by Pyrogram royalty"
+            f"**🚀 ULTRA USERBOT IS ALIVE!**\n⏱️ Uptime: `{uptime_str}`\n\n👑<i> Powered by Pyrogram royalty</i>"
         )
     except Exception as e:
         await message.edit_text(f"❌ Error getting uptime:\n<code>{e}</code>")
